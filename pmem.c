@@ -261,6 +261,7 @@ out:
 	bio_endio(bio, err);
 }
 
+#if 0
 static int pmem_rw_page(struct block_device *bdev, sector_t sector,
 		       struct page *page, int rw)
 {
@@ -270,9 +271,10 @@ static int pmem_rw_page(struct block_device *bdev, sector_t sector,
 	page_endio(page, rw & WRITE, 0);
 	return 0;
 }
+#endif
 
 static long pmem_direct_access(struct block_device *bdev, sector_t sector,
-			      void **kaddr, unsigned long *pfn, long size)
+			      void **kaddr, unsigned long *pfn)
 {
 	struct pmem_device *pmem = bdev->bd_disk->private_data;
 	timing_t dax_time;
@@ -285,12 +287,12 @@ static long pmem_direct_access(struct block_device *bdev, sector_t sector,
 	*pfn = pmem_lookup_pfn(pmem, sector);
 	PMFS_END_TIMING(dax_t, dax_time);
 
-	return pmem->size - (sector * 512);
+	return 0;
 }
 
 static const struct block_device_operations pmem_fops = {
 	.owner =		THIS_MODULE,
-	.rw_page =		pmem_rw_page,
+//	.rw_page =		pmem_rw_page,
 	.direct_access =	pmem_direct_access,
 	.getgeo =		pmem_getgeo,
 };
